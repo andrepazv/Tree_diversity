@@ -11,18 +11,27 @@ setwd("/Users/andreapaz/Dropbox/**PostDoc_ETH/Trees_PD_FD")
 dir<-getwd()
 points<-read.csv("~/Dropbox/**PostDoc_ETH/Trees_PD_FD/Alpha_hulls/all_trees_alldb.csv")
 ##create dataframe to store the alphas for each species
+points$Species<-tolower(points$Species)
+points$Species<-gsub(" ","_",points$Species)
+points$Species<-stringr::str_to_title(points$Species)
 species_names<-unique(points$Species)
+
+length(species_names)
+setwd("/Users/andreapaz/Dropbox/**PostDoc_ETH/Trees_PD_FD/Alpha_hulls2/")
+dir<-getwd()
+library(rgdal)
+library(rangeBuilder)
 alpha_used<-data.frame(NA,NA)
 numberused<-data.frame(NA,NA)
 colnames(alpha_used)<-c("species","alpha")
 colnames(numberused)<-c("species","numberPoly")
-for (i in species_names){
-  loc<-subset(points,Species==i)
+for (i in species_names[25459:53965]){
+  loc<-subset(points,Species==i)[2:4]
   loc<-loc[!duplicated(loc), ]
   tryCatch({
     ###Add condition of more than 3 points else create point based raster. if
-    if(length(loc$species)<=3){
-      coordinates(loc)<-~Longitude+Latitude 
+    if(length(loc$Species)<=3){
+      sp::coordinates(loc)<-~Longitude+Latitude 
       writeOGR(loc,dir,paste("map",i,sep="_"),driver="ESRI Shapefile")
     }
     else
@@ -44,4 +53,5 @@ for (i in species_names){
   },error=function(e){cat("ERROR:",i,conditionMessage(e),"\n")})
 }
 alpha_used<-alpha_used[2:length(alpha_used$species),]
-write.csv(alpha_used,"alpha_per_species.csv")
+write.csv(alpha_used,"alpha_per_species4.csv")
+write.csv(numberused,"number_per_species4.csv")
