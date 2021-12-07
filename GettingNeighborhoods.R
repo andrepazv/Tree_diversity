@@ -14,23 +14,22 @@ plotID<-plotID$cells
 
 FocalCellID<-plotID[1]###plot cell ID?
 neighbourNumber<-3   ###user det
+GettingNeighbours<-function(FocalCellID,neighbourNumber){
 neighbours<-1:neighbourNumber
 
 FocalCellRow<-rowFromCell(FocalCellID)
 FocalCellCol<-colFromCell(FocalCellID)
-neighborCells<-list()
+neighbourCells<-list()
 for(i in 1:neighbourNumber){
 
-
- 
-
- 
-
-
-neighborCells[[i]]<-c(cellFromRowCol(FocalCellRow-i,FocalCellCol-i),cellFromRowCol(FocalCellRow-i,FocalCellCol),
+neighbourCells[[i]]<-c(cellFromRowCol(FocalCellRow-i,FocalCellCol-i),cellFromRowCol(FocalCellRow-i,FocalCellCol),
 cellFromRowCol(FocalCellRow-i,FocalCellCol+i),cellFromRowCol(FocalCellRow,FocalCellCol-i),
 cellFromRowCol(FocalCellRow,FocalCellCol+i),cellFromRowCol(FocalCellRow+i,FocalCellCol-i),
 cellFromRowCol(FocalCellRow+i,FocalCellCol),cellFromRowCol(FocalCellRow+i,FocalCellCol+i))
 }
 
- cellFromRowCol.
+AllCells<-unlist(neighbourCells)
+return(AllCells)
+
+}
+lapply(plotID,function(x){FocalCellID=x,neighbourNumber=2})
