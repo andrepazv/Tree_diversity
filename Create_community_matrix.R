@@ -16,7 +16,7 @@ if(length(args)>0){
 	print(overwrite)
 }else{
 	# if running locally, just specify values
-	nthreads <- 14
+	nthreads <- 10
 	resolution <- 10
 	overwrite <- TRUE
 }
@@ -25,23 +25,24 @@ if(length(args)>0){
 ###Setwd to folder containing the polygons###
 setwd("~/Git/Tree_diversity/data/")
 
-
 #######################################################################################
 # Functions
 ######################################################################################
 
+registerDoParallel(nthreads)
+
 ####Some species have <3 points they are not polygons but points but this would work for both 
 ### function to rasterize points or polygons
-rasterize_species <- function(x, dsn, my_mask, my_base, my_res, overwrite) {
+rasterize_species <- function(x, shape_dir, out_dir, my_mask, my_base, my_res, overwrite) {
 	
-	file_name <- paste(dsn,"/", x, "_", my_res, ".asc", sep = "")
+	file_name <- paste(out_dir,"/", x, "_", my_res, ".asc", sep = "")
 	
 	if(file.exists(file_name) & !overwrite){
 		r <- raster(file_name)
 		return (r)
 	}else{
 		
-		map <- readOGR(dsn = dsn, layer = x)
+		map <- readOGR(dsn = shape_dir, layer = x)
 		r <- rasterize(x = map, y = my_base, field = 1, update = T, background = 0)
 		r <- mask(r, my_mask)
 		r <- crop(r, my_mask)
@@ -119,11 +120,16 @@ distribution_files <- str_sort(list.files(path = "Alpha_clean/", pattern = "*.sh
 distribution_maps <- sub(".shp", "", distribution_files) 
 
 ## Load all polygons and rasterize them. read in parallel
-cl <- makeForkCluster(nthreads)
-layers <- parLapply(distribution_maps, fun = rasterize_species, my_mask = selected_mask, my_base = raster_base, my_res = resolution, overwrite = overwrite, dsn = "Alpha_clean/", cl = cl)
-stopCluster(cl)
-rm(cl)
-closeAllConnections()
+layers <- mclapply(distribution_maps, 
+				   FUN = rasterize_species, 
+				   my_mask = selected_mask,
+				   my_base = raster_base, 
+				   my_res = resolution, 
+				   overwrite = overwrite, 
+				   shape_dir = "Alpha_clean/", 
+				   out_dir = "Alpha_rasters/",
+				   mc.cores = nthreads)
+
 
 ## read in biomes poly
 biomes_poly <- readOGR(dsn = "~/local_Git/Tree_diversity/data/WWF_ecorregions/WWF_Biomes.shp")
@@ -143,7 +149,7 @@ names(ecoregion_rast) <- "ecoregion"
 ## Stack all maps 
 Stack_maps <- stack(append(append(layers, biomes_rast), ecoregion_rast))
 
-## get the grid ids and add to the stack as a new layer
+## et the grid ids and add to the stack as a new layer
 mocklayer <- Stack_maps[[1]]
 res(mocklayer) <- res(Stack_maps)
 names(mocklayer) = "grid"
