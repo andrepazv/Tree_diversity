@@ -9,27 +9,28 @@ rasterBase<-raster::raster("~/Dropbox/wc2/wc2.1_10m_bio_1.tif") ### This is a 10
 rasterBase<-raster::aggregate(rasterBase,10)
 ###intersect plots with the raster base to get a list of cells with plots
 ###plots should be a 2 column data frame , longitude,latitude
-plotID<-raster::extract(rasterBase,plots,cellnumbers=T)
-plotID<-plotID$cells
+plotID<-raster::extract(rasterBase,plotID,cellnumbers=T)
+plotID<-plotID[,1]
 
 FocalCellID<-plotID[1]###plot cell ID?
 neighbourNumber<-3   ###user det
-GettingNeighbours<-function(FocalCellID,neighbourNumber){
+GettingNeighbours<-function(FocalCellID,neighbourNumber,r=rasterBase){
 neighbours<-1:neighbourNumber
 
-FocalCellRow<-rowFromCell(FocalCellID)
-FocalCellCol<-colFromCell(FocalCellID)
+FocalCellRow<-rowFromCell(r,FocalCellID)
+FocalCellCol<-colFromCell(r,FocalCellID)
 neighbourCells<-list()
 for(i in 1:neighbourNumber){
 
-neighbourCells[[i]]<-c(cellFromRowCol(FocalCellRow-i,FocalCellCol-i),cellFromRowCol(FocalCellRow-i,FocalCellCol),
-cellFromRowCol(FocalCellRow-i,FocalCellCol+i),cellFromRowCol(FocalCellRow,FocalCellCol-i),
-cellFromRowCol(FocalCellRow,FocalCellCol+i),cellFromRowCol(FocalCellRow+i,FocalCellCol-i),
-cellFromRowCol(FocalCellRow+i,FocalCellCol),cellFromRowCol(FocalCellRow+i,FocalCellCol+i))
+neighbourCells[[i]]<-c(cellFromRowCol(r,FocalCellRow-i,FocalCellCol-i),cellFromRowCol(r,FocalCellRow-i,FocalCellCol),
+cellFromRowCol(r,FocalCellRow-i,FocalCellCol+i),cellFromRowCol(r,FocalCellRow,FocalCellCol-i),
+cellFromRowCol(r,FocalCellRow,FocalCellCol+i),cellFromRowCol(r,FocalCellRow+i,FocalCellCol-i),
+cellFromRowCol(r,FocalCellRow+i,FocalCellCol),cellFromRowCol(r,FocalCellRow+i,FocalCellCol+i))
 }
 
-AllCells<-unlist(neighbourCells)
-return(AllCells)
+#AllCells<-unlist(neighbourCells)
+return(neighbourCells)
 
 }
-lapply(plotID,function(x){FocalCellID=x,neighbourNumber=2})
+NeighborID<-lapply(plotID,function(x){GettingNeighbours(FocalCellID=x,neighbourNumber=3)})
+names(NeighborID)<-plotID
