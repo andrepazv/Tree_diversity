@@ -43,6 +43,6 @@ community_data<-read.csv("CommMatrix.csv")
 		###This for a single focus cell then make function
 CellsofInterest<-NeighborID[[plotID[1]]]
 CommunitiesofInterest<-community_data[which(community_data$Grid==CellsofInterest),]
-speciesPool<- names(CommunitiesofInterest)[rowSums(CommunitiesofInterest)>=1]
+speciesPool<- names(CommunitiesofInterest)[colSums(CommunitiesofInterest)>=1]
 
 
