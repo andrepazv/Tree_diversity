@@ -34,3 +34,15 @@ return(neighbourCells)
 }
 NeighborID<-lapply(plotID,function(x){GettingNeighbours(FocalCellID=x,neighbourNumber=3)})
 names(NeighborID)<-plotID
+
+
+####Get the communities of interest 
+##if ran along with the Communities script then use community data else must read the matrix from disk
+community_data<-read.csv("CommMatrix.csv")
+###Assuming this has a column named Grid from the other script
+		###This for a single focus cell then make function
+CellsofInterest<-NeighborID[[plotID[1]]]
+CommunitiesofInterest<-community_data[which(community_data$Grid==CellsofInterest),]
+speciesPool<- names(CommunitiesofInterest)[rowSums(CommunitiesofInterest)>=1]
+
+
