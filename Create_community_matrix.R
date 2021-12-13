@@ -153,7 +153,8 @@ Stack_maps <- stack(append(append(layers, biomes_rast), ecoregion_rast))
 mocklayer <- Stack_maps[[1]]
 res(mocklayer) <- res(Stack_maps)
 names(mocklayer) = "grid"
-mocklayer[1:ncell(mocklayer)] <- 1:ncell(mocklayer)
+#mocklayer[1:ncell(mocklayer)] <- 1:ncell(mocklayer)
+ mocklayer<-init(mocklayer,"cell")
 list_grid <- list(mocklayer)
 names(list_grid) <- "Grid"
 Stack <- stack(list_grid$Grid, Stack_maps) 
