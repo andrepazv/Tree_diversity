@@ -41,7 +41,7 @@ names(NeighborID)<-plotID
 community_data<-read.csv("CommMatrix.csv")
 ###Assuming this has a column named Grid from the other script
 		###This for a single focus cell then make function
-CellsofInterest<-NeighborID[[plotID[1]]]
+CellsofInterest<-c(NeighborID[[plotID[1]]],plotID[[1]])
 CommunitiesofInterest<-community_data[which(community_data$Grid==CellsofInterest),]
 speciesPool<- names(CommunitiesofInterest)[colSums(CommunitiesofInterest)>=1]
 
