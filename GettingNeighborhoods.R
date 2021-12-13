@@ -40,9 +40,17 @@ names(NeighborID)<-plotID
 ##if ran along with the Communities script then use community data else must read the matrix from disk
 community_data<-read.csv("CommMatrix.csv")
 ###Assuming this has a column named Grid from the other script
+###select number of neighborrs
+n<-2
+all_neighbors<-1:n
 		###This for a single focus cell then make function
-CellsofInterest<-c(NeighborID[[plotID[1]]],plotID[[1]])
-CommunitiesofInterest<-community_data[which(community_data$Grid==CellsofInterest),]
+CellsofInterest<-NeighborID[[plotID[1]]]
+allCells<-vector()
+for(i in 1:n){
+	allCells<-c(allCells,CellsofInterest[[i]])
+	}
+allCells<-c(allCells,plotID[1])
+CommunitiesofInterest<-community_data[which(community_data$Grid==allCells),]
 speciesPool<- names(CommunitiesofInterest)[colSums(CommunitiesofInterest)>=1]
 
 
