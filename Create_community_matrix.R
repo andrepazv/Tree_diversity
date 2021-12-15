@@ -51,6 +51,7 @@ rasterize_species <- function(x, shape_dir, out_dir, my_mask, my_base, my_res, o
 		
 		# return(r)
 	}
+	return()
 }
 
 # replace NA biomes with closest non NA value
