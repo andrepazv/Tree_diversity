@@ -23,7 +23,7 @@ if(length(args)>0){
 
 
 ###Setwd to folder containing the polygons###
-setwd("~/Git/Tree_diversity/data/")
+setwd("~/local_Git/Tree_diversity/data/")
 
 #######################################################################################
 # Functions
@@ -39,7 +39,7 @@ rasterize_species <- function(x, shape_dir, out_dir, my_mask, my_base, my_res, o
 	
 	if(file.exists(file_name) & !overwrite){
 		r <- raster(file_name)
-		return (r)
+		# return (r)
 	}else{
 		
 		map <- readOGR(dsn = shape_dir, layer = x)
@@ -49,7 +49,7 @@ rasterize_species <- function(x, shape_dir, out_dir, my_mask, my_base, my_res, o
 		names(r) <- gsub("map_", "", x)
 		writeRaster(r, file_name, overwrite = TRUE)
 		
-		return(r)
+		# return(r)
 	}
 }
 
@@ -119,8 +119,16 @@ values(raster_base) <- 0
 distribution_files <- str_sort(list.files(path = "Alpha_clean/", pattern = "*.shp$"), numeric = TRUE)
 distribution_maps <- sub(".shp", "", distribution_files) 
 
-## Load all polygons and rasterize them. read in parallel
-layers <- mclapply(distribution_maps, 
+fia_names <- read_csv("~/Git/fia_data/data/metadata/2019 Master Species FGver90_10_01_2019_rev_2_10_2020.csv") %>% 
+	mutate(name = str_to_sentence(trimws(paste(Genus, Species), which = "both"))) %>% select(name, Genus, Species) %>% distinct() 
+
+in_fia <- sapply(distribution_maps, function(x) str_to_sentence(trimws(paste(str_split(x, pattern = "_")[[1]][2:3], collapse = " "), which = "both"))%in%fia_names$name)
+
+distribution_maps <- distribution_maps[in_fia]
+
+
+## rasterize them and write in parallel. This no longer loads the files
+mclapply(distribution_maps, 
 				   FUN = rasterize_species, 
 				   my_mask = selected_mask,
 				   my_base = raster_base, 
@@ -130,6 +138,10 @@ layers <- mclapply(distribution_maps,
 				   out_dir = "Alpha_rasters/",
 				   mc.cores = nthreads)
 
+# now load the files and stack them
+rast_list <- str_sort(list.files(path = "Alpha_rasters/"), numeric = TRUE)
+rast_list <- rast_list[grepl(paste0("_", resolution,".asc"), rast_list)]
+layers <- stack(paste0("Alpha_rasters/",rast_list))
 
 ## read in biomes poly
 biomes_poly <- readOGR(dsn = "~/local_Git/Tree_diversity/data/WWF_ecorregions/WWF_Biomes.shp")
@@ -149,19 +161,19 @@ names(ecoregion_rast) <- "ecoregion"
 ## Stack all maps 
 Stack_maps <- stack(append(append(layers, biomes_rast), ecoregion_rast))
 
-## et the grid ids and add to the stack as a new layer
+## get the grid ids and add to the stack as a new layer
 mocklayer <- Stack_maps[[1]]
 res(mocklayer) <- res(Stack_maps)
 names(mocklayer) = "grid"
 #mocklayer[1:ncell(mocklayer)] <- 1:ncell(mocklayer)
- mocklayer<-init(mocklayer,"cell")
-list_grid <- list(mocklayer)
-names(list_grid) <- "Grid"
-Stack <- stack(list_grid$Grid, Stack_maps) 
+mocklayer<-init(mocklayer,"cell")
+names(mocklayer) <- "Grid"
+# list_grid <- list(mocklayer)
+Stack <- stack(mocklayer, Stack_maps) 
 
 # Turn maps into dataframe. remove grids with no species
 community_data <- as.data.frame(Stack, xy = TRUE) %>% as_tibble() %>% 
-	gather(species, present, -grid, -biome, -ecoregion, -x, -y) %>%
+	gather(species, present, -Grid, -biome, -ecoregion, -x, -y) %>%
 	filter(!is.na(present)) %>%
 	filter(present>0) %>%
 	spread(species, present, fill = 0) %>% 
@@ -179,8 +191,8 @@ community_data <- as.data.frame(Stack, xy = TRUE) %>% as_tibble() %>%
 community_data <- fix_na_biomes(cd = community_data, nthreads = nthreads)
 
 ### visualize biomes
-# pd <- community_data %>% select(x, y, biome, ecoregion) %>% distinct()
-# plot(pd$y~pd$x, col = pd$biome)
-# plot(pd$y~pd$x, col = pd$ecoregion)
+pd <- community_data %>% select(x, y, biome, ecoregion) %>% distinct()
+plot(pd$y~pd$x, col = pd$biome)
+plot(pd$y~pd$x, col = pd$ecoregion)
 
 write_csv(community_data, paste0("Community_matrix_res_", resolution, ".csv"))
