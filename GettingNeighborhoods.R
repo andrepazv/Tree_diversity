@@ -54,7 +54,8 @@ community_data<-read.csv(paste0("Community_matrix_res_", resolution,".csv"))
 n<-10
 all_neighbors<-1:n
 ###This for a single focus cell then make function
-CellsofInterest<-NeighborID[[plotID[1]]]
+CellsofInterest<-NeighborID[[plotID[1]]] 
+##maybe CellsofInterest<-NeighborID[[as.character(plotID[1])]] 
 allCells<-vector()
 for(i in 1:n){
 	allCells<-c(allCells,CellsofInterest[[i]])
