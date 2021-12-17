@@ -61,7 +61,8 @@ for(i in n:1){
   r<-rasterBase
   r[-which(rasterBase[]%in%unlist(CellsofInterest[[i]]))]<-NA
   r[which(rasterBase[]%in%unlist(CellsofInterest[[i]]))]<-i
-  plot(r,col=rainbow(12)[i],add=T)
+
+  image(r,col=rainbow(12)[i],add=T,maxpixel=ncell(r))
 }
 
 CellsofInterest<-NeighborID[[plotID[1]]] 
