@@ -31,11 +31,12 @@ GettingNeighbours<-function(FocalCellID,neighbourNumber,r=rasterBase){
 	FocalCellCol<-colFromCell(r,FocalCellID)
 	neighbourCells<-list()
 	for(i in 1:neighbourNumber){
-		
-		neighbourCells[[i]]<-c(cellFromRowCol(r,FocalCellRow-i,FocalCellCol-i),cellFromRowCol(r,FocalCellRow-i,FocalCellCol),
-							   cellFromRowCol(r,FocalCellRow-i,FocalCellCol+i),cellFromRowCol(r,FocalCellRow,FocalCellCol-i),
-							   cellFromRowCol(r,FocalCellRow,FocalCellCol+i),cellFromRowCol(r,FocalCellRow+i,FocalCellCol-i),
-							   cellFromRowCol(r,FocalCellRow+i,FocalCellCol),cellFromRowCol(r,FocalCellRow+i,FocalCellCol+i))
+	corners<-c(cellFromRowCol(r,FocalCellRow-i,FocalCellCol-i),
+                      cellFromRowCol(r,FocalCellRow-i,FocalCellCol+i),
+                      cellFromRowCol(r,FocalCellRow+i,FocalCellCol-i),
+                      cellFromRowCol(r,FocalCellRow+i,FocalCellCol+i))
+	neighbourCells[[i]]<-values(rasterFromCells(rasterBase,corners))
+		#neighbourCells[[i]]<-allNeighbors[which(allNeighbors!=FocalCellID)] ##uncomment this to exclude focalcell from list
 	}
 	
 	#AllCells<-unlist(neighbourCells)
@@ -54,13 +55,19 @@ community_data<-read.csv(paste0("Community_matrix_res_", resolution,".csv"))
 n<-10
 all_neighbors<-1:n
 ###This for a single focus cell then make function
+   ###First plotting for nicer visuals (for neighborhoud 1 the grid shows up in the wring place but coordinates are correct.
+plot(rasterBase,col="white")
+for(i in n:1){
+  r<-rasterBase
+  r[-which(rasterBase[]%in%unlist(CellsofInterest[[i]]))]<-NA
+  r[which(rasterBase[]%in%unlist(CellsofInterest[[i]]))]<-i
+  plot(r,col=rainbow(12)[i],add=T)
+}
+
 CellsofInterest<-NeighborID[[plotID[1]]] 
 ##maybe CellsofInterest<-NeighborID[[as.character(plotID[1])]] 
-allCells<-vector()
-for(i in 1:n){
-	allCells<-c(allCells,CellsofInterest[[i]])
-}
-allCells<-c(allCells,plotID[1])
+#allCells<-c(allCells,plotID[1]) #uncomment here if focal cell excluded in neighborhood function 
+allCells<-CellsofInterest[[n]]
 CommunitiesofInterest<-community_data[which(community_data$Grid%in%allCells),]
 speciesPool<- names(CommunitiesofInterest[-c(1:6)])[colSums(CommunitiesofInterest[-c(1:6)])>=1]
 
