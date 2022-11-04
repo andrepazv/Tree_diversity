@@ -33,9 +33,10 @@ ferns <- c("Lophosoria", "Metaxya", "Sphaeropteris", "Alsophila", "Nephelea", "T
 ag0 <- read_csv("raw_data/ANGIO_GYMNO_lookup.csv")
 
 # read in the community data
-commo <- feather::read_feather("raw_data/NoMono_matchPD_FD_gather.feather") %>% 
+commo <- arrow::read_feather("raw_data/NoMono_matchPD_FD_gather.arrow") %>% 
 	mutate(accepted_bin = trimws(gsub("_", " ", accepted_bin), "both"))
 
+arrow::write_feather(commo, "raw_data/NoMono_matchPD_FD_gather.arrow")
 # read in the synonyms
 syns <- read_csv("raw_data/matched_trait_names.csv") %>% 
 	filter(!duplicated(trait_name), !duplicated(raw_name))
