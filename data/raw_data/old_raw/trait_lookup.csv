@@ -1,0 +1,19 @@
+TraitID,trait,trait_short
+4,Wood density,Wood density
+6,Root depth,Root depth
+14,Leaf N per mass,Leaf N
+15,Leaf P per mass,Leaf P
+21,Stem diameter,Stem diameter
+24,Bark thickness,Bark thickness
+26,Seed dry mass,Seed dry mass
+44,Leaf K per mass,Leaf K
+45,Stomatal conductance,Stomatal conduct.
+46,Leaf thickness,Leaf thickness
+48,Leaf density,Leaf density
+185,Leaf Vcmax per dry mass,Leaf Vcmax
+281,Stem conduit diameter,Conduit diam.
+324,Crown diameter,Crown diameter
+773,Crown height,Crown height
+3106,Tree height,Tree height
+3110,Leaf area,Leaf area
+3117,Specific leaf area,Specific leaf area
