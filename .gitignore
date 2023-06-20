@@ -1,3 +1,10 @@
 data/
 simulations/raw_data
 .lsf*
+data/raw_data/NoMono_matchPD_FD_communities.csv
+data/results/old_results/Community_matrix_for_FD_PD_38k_spread.csv
+data/raw_data/NoMono_matchPD_FD_gather.feather
+data/raw_data/NoMono_matchPD_FD_communities.csv
+data/raw_data/old_raw/composite_lat_long_grids.csv
+data/raw_data/distances_plots_obs.csv
+data/results/old_results/Community_matrix_for_FD_PD_38k_spread.csv
