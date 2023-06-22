@@ -22,7 +22,7 @@ pruned_tree <- read.tree("cleaned_data/REV_Pruned_tree.csv")
 dmat <- read_csv("raw_data/distances_plots_obs.csv") 
 cont <- read_csv("raw_data/continents_grid.csv") %>% select(Grid, Continent) %>% rename(grid_id = Grid)
 ll <- read_csv("raw_data/ll_with_species.csv") %>% left_join(cont)
-dcut <- read_csv("cleaned_data/species_cut_ranges.csv") %>% select(accepted_bin, maxd)
+# dcut <- read_csv("cleaned_data/species_cut_ranges.csv") %>% select(accepted_bin, maxd)
 
 # double check that the right files are loaded, all should be zero, otherwise clear the environment
 if((sum(!dt_mat$accepted_bin%in%comm0$accepted_bin) + 
@@ -34,11 +34,18 @@ if((sum(!dt_mat$accepted_bin%in%comm0$accepted_bin) +
 	sum(!unique(comm0$accepted_bin)%in%pruned_tree$tip.label) +
 	sum(!dt_mat$accepted_bin%in%pruned_tree$tip.label)) >0) {rm(list=ls()); stop("name mismatch")}
 
-bad_spp <- c("Rhododendron_watsonii", "Syringa_pinetorum", "Acacia_farnesiana", "Photinia_davidiana", "Paulownia_kawakamii", "Eucalyptus_pulverulenta")
+# bad_spp <- c("Rhododendron_watsonii", "Syringa_pinetorum", "Acacia_farnesiana", "Photinia_davidiana", "Paulownia_kawakamii", "Eucalyptus_pulverulenta")
 
-comm <- comm0 %>% left_join(dmat) %>% left_join(dcut) %>% filter(mindist < maxd) %>% 
-	filter(!accepted_bin%in%bad_spp)
+bad_spp <- dmat %>% filter(mindist > 1000) %>% select(accepted_bin) %>% distinct()
+
+comm <- comm0 %>% left_join(dmat) %>% filter(!accepted_bin%in%bad_spp$accepted_bin | mindist < 200)
+
+# comm <- comm0 %>% #left_join(dmat) %>% left_join(dcut) %>% 
+# 	# mutate(maxd = ifelse(maxd < 2500, 200, 1000)) %>% 
+# 	# filter(mindist < maxd)# %>%
+# 	# filter(mindist < 1000) %>% 
+# 	# filter(!accepted_bin%in%bad_spp)
 
 
-write_csv(comm, "cleaned_data/REV_Community_matrix_PCUT.csv")
+write_csv(comm, "cleaned_data/REV_Community_matrix_200.csv")
 

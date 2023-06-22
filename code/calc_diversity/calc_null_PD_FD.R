@@ -22,7 +22,7 @@ pairdist <- function(myd){
 setwd("~/Git/Tree_diversity/data")
 
 
-save_suffix <- "_PCUT"
+save_suffix <- "_200"
 
 
 # read in the data
@@ -32,20 +32,27 @@ pruned_tree <- read.tree("cleaned_data/REV_Pruned_tree.csv")
 ag <- read_csv("raw_data/ANGIO_GYMNO_lookup.csv") %>% 
 	mutate(accepted_bin = gsub(" " , "_", accepted_bin)) %>% select(accepted_bin, group)
 
+print(paste0("Using: ", "REV_Community_matrix",save_suffix,".csv"))
+
 # which null models to do -- 1=all, 2=angio, 3=gymno
-fit_seq <- c(2)
+fit_seq <- c(1:2)
+
+gg <- 2
 
 for(gg in fit_seq){
 	
 	if(gg == 2){
-		comm <- comm0 %>% left_join(ag) %>% 
+		print("fitting ANGIOS")
+		comm <- comm0 %>% left_join(ag, by = "accepted_bin") %>% 
 			filter(group == "Angiosperms")
 		outf <- paste0("results/REV_null_results_ANGIO", save_suffix, ".csv")
 	}else if(gg == 3){
-		comm <- comm0 %>% left_join(ag) %>% 
+		print("fitting GYMNOS")
+		comm <- comm0 %>% left_join(ag, by = "accepted_bin") %>% 
 			filter(group == "Gymnosperms")
 		outf <- paste0("results/REV_null_results_GYMNO", save_suffix, ".csv")
 	}else{
+		print("fitting ALL")
 		comm <- comm0
 		outf <- paste0("results/REV_null_results", save_suffix, ".csv")
 	}
