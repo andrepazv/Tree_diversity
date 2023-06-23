@@ -20,9 +20,19 @@ pairdist <- function(myd){
 setwd("~/Git/Tree_diversity/data")
 
 # read in the data
-comm <- read_csv("cleaned_data/REV_Community_matrix_CLEANED.csv")
+save_suffix <- "_200"
+
+
+# read in the data
+comm0 <- read_csv(paste0("cleaned_data/REV_Community_matrix",save_suffix,".csv"))
 dt_mat <- read_csv("cleaned_data/REV_Trait_matrix.csv")
 pruned_tree <- read.tree("cleaned_data/REV_Pruned_tree.csv")
+ag <- read_csv("raw_data/ANGIO_GYMNO_lookup.csv") %>% 
+	mutate(accepted_bin = gsub(" " , "_", accepted_bin)) %>% select(accepted_bin, group)
+continent <- read_csv("raw_data/continents_grid.csv") %>% select(Grid, Continent) %>% rename(grid_id = Grid)
+comm <- comm0 %>% left_join(continent) %>% filter(!is.na(Continent))
+
+print(paste0("Using: ", "REV_Community_matrix",save_suffix,".csv"))
 
 
 # gatti numbers per contintent
@@ -131,7 +141,7 @@ res <- data %>% select(-rep) %>% gather(metric, value, -grid_id) %>% na.omit() %
 	ungroup %>% filter(nsim > 0) 
 
 # save the results
-write_csv(res, "results/REV_downsample_gatti.csv")
+write_csv(res, paste0("results/REV_downsample_gatti",save_suffix,".csv"))
 
 # remove temp directory
 unlink("gatti_temp", recursive = TRUE)

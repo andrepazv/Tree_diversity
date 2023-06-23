@@ -32,7 +32,7 @@ ag <- read_csv("raw_data/ANGIO_GYMNO_lookup.csv") %>%
 print(paste0("Using: ", "REV_Community_matrix",save_suffix,".csv"))
 
 # which null models to do -- 1=all, 2=angio, 3=gymno
-fit_seq <- c(1:2)
+fit_seq <- c(2)
 
 gg <- 2
 
