@@ -29,10 +29,12 @@ pruned_tree <- read.tree("cleaned_data/REV_Pruned_tree.csv")
 ag <- read_csv("raw_data/ANGIO_GYMNO_lookup.csv") %>% 
 	mutate(accepted_bin = gsub(" " , "_", accepted_bin)) %>% select(accepted_bin, group)
 
+inv <- read_csv("raw_data/Invasive_glonaf.csv")
+
 print(paste0("Using: ", "REV_Community_matrix",save_suffix,".csv"))
 
-# which null models to do -- 1=all, 2=angio, 3=gymno
-fit_seq <- c(2)
+# which null models to do -- 1=all, 2=angio, 3=gymno, 4=no invasives
+fit_seq <- c(4)
 
 gg <- 2
 
@@ -48,6 +50,10 @@ for(gg in fit_seq){
 		comm <- comm0 %>% left_join(ag, by = "accepted_bin") %>% 
 			filter(group == "Gymnosperms")
 		outf <- paste0("results/REV_obs_results_GYMNO", save_suffix, ".csv")
+	}else if(gg == 4){
+		print("removing INVASIVES")
+		comm <- comm0 %>% filter(!accepted_bin%in%inv$x)
+		outf <- paste0("results/REV_obs_results_INV", save_suffix, ".csv")
 	}else{
 		print("fitting ALL")
 		comm <- comm0
