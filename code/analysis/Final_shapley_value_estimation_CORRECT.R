@@ -14,13 +14,12 @@ registerDoParallel(12)
 
 #####for Z values#####
 ###load the composite values 
-setwd("~/Downloads/Dan_simulations/")
-compositeVals<-read.csv("biomes_composite_diver_stab.csv")
+#compositeVals<-read.csv("biomes_composite_diver_stab.csv") ##this file is too heavy for git
+compositeVals<-read.csv("data/raw_data/compositve_values.csv) ##this is a summarized version already subsetting to variables of interest
 ##transfor for the Grid ID to be the rowname
 
 ##match the composite values to the Z-values from all_metrics
-setwd("~/Dropbox/**PostDoc_ETH/Trees_PD_FD/Manuscript/NatCommsRev/")
-all_metrics<-read.csv("REV_obs_results_200_zvals.csv")  #Final simulations from DAn all but FR
+all_metrics<-read.csv("data/results/REV_obs_results_200_zvals.csv")  
 
 compositeVals[match(all_metrics$grid_id,compositeVals$Grid),"zPd"]<-all_metrics$Zpd
 compositeVals[match(all_metrics$grid_id,compositeVals$Grid),"zMPD"]<-all_metrics$Zmpd
