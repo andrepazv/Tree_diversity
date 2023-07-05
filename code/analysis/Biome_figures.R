@@ -1,8 +1,5 @@
 library(raster)
 library(ggplot2)
-#library(devtools)
-#install_github("vqv/ggbiplot")
-library(ggbiplot) ### maybe not needed
 setwd("~/Dropbox/**PostDoc_ETH/Trees_PD_FD/Manuscript/NatCommsRev/")
 
 ###plotting the relation between diversity dimensions
@@ -37,20 +34,6 @@ pdmpd_df<-na.omit(pdmpd_df)
 fdrao_df<-stack(FD,rao)
 fdrao_df<-as.data.frame(fdrao_df)
 fdrao_df<-na.omit(fdrao_df)
-
-    ##use this to check the data 
-#linear_model_sr_pd<-lm(PD~0+SR,data=srpd_df)
-#plot(srpd_df$SR,srpd_df$PD,ylab="PD",xlab="Richness")
-#abline(linear_model_sr_pd,col="red")
-
-#linear_model_sr_fd<-lm(FD~0+SR,data=srfd_df)
-#plot(srfd_df$SR,srfd_df$FD,xlab="Richness",ylab="FRic")
-#abline(linear_model_sr_fd,col="red")
-
-#linear_model_fdpd<-lm(fdpd_df)
-#plot(fdpd_df$PD,fdpd_df$FR,xlab="PD",ylab="FRic")
-#abline(linear_model_fdpd,col="red")
-
 
 ###To compare biomes first load all biome shapefile
 wwf_eco<-rgdal::readOGR("~/Dropbox/**PostDoc_ETH/WWF_ecorregions","wwf_terr_ecos")
@@ -234,42 +217,7 @@ colors_hand1<-c("darkgreen","darkolivegreen3","springgreen3","orange","darkorang
       FD_temp<-raster::crop(FD,biome)
       FD_temp<-raster::mask(FD_temp,biome) 
   
- # rao_temp<-raster::crop(rao,biome)
-#  rao_temp<-raster::mask(rao_temp,biome)
- # mpd_temp<-raster::crop(mpd,biome)
-#  mpd_temp<-raster::mask(mpd_temp,biome)
- # mpdrao_df<-stack(rao_temp,mpd_temp)
-#  mpdrao_df<-as.data.frame(mpdrao_df)
-#  points(mpdrao_df$Trees_nomono_matchPDFD_30_100_PD_mpd,mpdrao_df$Functional_raosq_polygon_based_matchedPDFD_30_100_,col = colors_hand[i])
-  
- # srpd_df<-raster::stack(PD_temp,SR_temp)
- #srpd_df<-raster::as.data.frame(srpd_df)
 
-  #points(srpd_df$Trees_nomono_30_100_PD_Richness,srpd_df$Trees_nomono_30_100_PD_PD,col = rainbow(24)[i])
-  ##get 99% of points
-#total_points<-ceiling(length(which(!is.na(srpd_df$Trees_nomono_30_100_PD_PD)))*0.99)
-# max_val<-max(sort(srpd_df$Trees_nomono_30_100_PD_PD,na.last=NA)[1:total_points])
- # srpd_df<-srpd_df[which(srpd_df$Trees_nomono_30_100_PD_PD<=max_val),]
-  ##get loess for only those 99%
-#  loess_points<-loess.smooth(srpd_df$Trees_nomono_30_100_PD_Richness,srpd_df$Trees_nomono_30_100_PD_PD,evaluation=100,span=1)
-#  lines(loess_points$x, loess_points$y, col = colors_hand[i],lwd=3)
-  #  abline(linear_model_sr_pd,col="red")
-#  srfd_df<-raster::stack(FD_temp,SR_temp)
-#  srfd_df<-raster::as.data.frame(srfd_df)
- #linear_model_sr_fd<-lm(srfd_df)
-
-##get 99% of points
-# total_points<-ceiling(length(which(!is.na(srfd_df$Functional_richness_scaled_1_8_function_polygon_based_matchedPDFD_30_100_)))*0.99)
-# max_val<-max(sort(srfd_df$Functional_richness_scaled_1_8_function_polygon_based_matchedPDFD_30_100_,na.last=NA)[1:total_points])
-# srfd_df<-srfd_df[which(srfd_df$Functional_richness_scaled_1_8_function_polygon_based_matchedPDFD_30_100_<=max_val),]
- ##get loeass for only those 99%
-#loess_points<-loess.smooth(srfd_df$Trees_nomono_30_100_PD_Richness,srfd_df$Functional_richness_scaled_1_8_function_polygon_based_matchedPDFD_30_100_,evaluation=100,span=1)
-#  lines(loess_points$x, loess_points$y, col = colors_hand[i],lwd=3)
- 
- # points(srfd_df$Trees_nomono_30_100_PD_Richness,srfd_df$Functional_richness_scaled_1_8_function_polygon_based_matchedPDFD_30_100_,col = colors_hand[i])
-  
-  #  abline(linear_model_sr_fd,col="red")
-  ###for dispersion mesaures
   
   ###For FD/PD
    fdpd_df1<-raster::stack(FD_temp,PD_temp)
