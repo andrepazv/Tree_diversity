@@ -15,7 +15,7 @@ registerDoParallel(12)
 #####for Z values#####
 ###load the composite values 
 #compositeVals<-read.csv("biomes_composite_diver_stab.csv") ##this file is too heavy for git
-compositeVals<-read.csv("data/raw_data/compositve_values.csv) ##this is a summarized version already subsetting to variables of interest
+compositeVals<-read.csv("data/raw_data/composite_values.csv") ##this is a summarized version already subsetting to variables of interest
 ##transfor for the Grid ID to be the rowname
 
 ##match the composite values to the Z-values from all_metrics
@@ -143,7 +143,7 @@ evars <- c(
 set.seed(15)
 
 # number of test vars for the shapley values. should be set to be a reasonable proportion of the full data
-ntest <- 1200
+ntest <- length(dt$Climate_Annual_Mean_Temperature)*0.3
 
 # number of sims for shapley values. larger is better (~100), but takes a long time. lower is fine to testing
 nsim <- 10
@@ -166,7 +166,7 @@ form <- as.formula(paste(indices[i], # name of response
 #r1 <- ranger(form, data = train_data %>% select(indices[i], all_of(evars)), importance = "permutation")
 model_caret <- train(form, data = train_data %>% select(indices[i], all_of(evars)),
                      method = "ranger",
-                     trControl = trainControl(method="cv", number = 5),
+                     trControl = trainControl(method="cv", number = 10),
                      importance = 'permutation')
 #print(paste("R2 for:",r1$call,":",r1$r.squared,sep=" "))
 ###get some stats with testing data for manuscript
